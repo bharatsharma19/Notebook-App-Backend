@@ -70,7 +70,7 @@ router.post("/login", [
     try {
       // Matching input email address with email address exist in database
 
-      let user = User.findOne({ email });
+      let user = await User.findOne({ email });
       if (!user) {
         return res
           .status(400)
@@ -79,7 +79,7 @@ router.post("/login", [
 
       // Matching input password with hashed string available in database
 
-      const passwordCompare = bcrypt.compare(password, user.password);
+      const passwordCompare = await bcrypt.compare(password, user.password);
       if (!passwordCompare) {
         return res
           .status(400)
@@ -92,7 +92,7 @@ router.post("/login", [
         },
       };
       const authToken = jwt.sign(data, JWT_SECRET);
-      res.json(authToken);
+      res.json({ authToken });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal Server Error");
