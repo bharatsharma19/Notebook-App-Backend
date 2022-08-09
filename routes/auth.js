@@ -54,4 +54,50 @@ router.post(
   }
 );
 
+// Authenticating an User using 'api/auth/login' -> No login Required
+
+router.post("/login", [
+  body("email", "Enter a valid Email").isEmail(),
+  body("password", "Password cannot be blank").exists(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body;
+
+    try {
+      // Matching input email address with email address exist in database
+
+      let user = User.findOne({ email });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ error: "Sign In with correct Credentials" });
+      }
+
+      // Matching input password with hashed string available in database
+
+      const passwordCompare = bcrypt.compare(password, user.password);
+      if (!passwordCompare) {
+        return res
+          .status(400)
+          .json({ error: "Sign In with correct Credentials" });
+      }
+
+      const data = {
+        user: {
+          id: user.id,
+        },
+      };
+      const authToken = jwt.sign(data, JWT_SECRET);
+      res.json(authToken);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Internal Server Error");
+    }
+  },
+]);
+
 module.exports = router;
