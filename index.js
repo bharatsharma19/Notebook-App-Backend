@@ -13,7 +13,7 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/notes", require("./routes/notes"));
 
 app.get("/", (req, res) => {
-  res.send("Hello Bharat");
+  res.send("Hello Bharat, Application is running Successfully");
 });
 
 app.listen(port, () => {
