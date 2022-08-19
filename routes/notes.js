@@ -92,8 +92,6 @@ router.put("/updatenote/:id", fetchuser, async (req, res) => {
 
 // Deletion of a Note
 router.delete("/deletenote/:id", fetchuser, async (req, res) => {
-  const { title, description, tag } = req.body;
-
   try {
     // Find the note to be deleted and delete it
     let note = await Notes.findById(req.params.id);
@@ -116,3 +114,5 @@ router.delete("/deletenote/:id", fetchuser, async (req, res) => {
 });
 
 module.exports = router;
+
+/* Developed by Bharat Sharma */
