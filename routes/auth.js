@@ -60,9 +60,10 @@ router.post("/login", [
   body("email", "Enter a valid Email").isEmail(),
   body("password", "Password cannot be blank").exists(),
   async (req, res) => {
+    let success = false;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ success, errors: errors.array() });
     }
 
     const { email, password } = req.body;
@@ -74,16 +75,17 @@ router.post("/login", [
       if (!user) {
         return res
           .status(400)
-          .json({ error: "Sign In with correct Credentials" });
+          .json({ success, error: "Sign In with correct Credentials" });
       }
 
       // Matching input password with hashed string available in database
 
       const passwordCompare = await bcrypt.compare(password, user.password);
+      success = false;
       if (!passwordCompare) {
         return res
           .status(400)
-          .json({ error: "Sign In with correct Credentials" });
+          .json({ success, error: "Sign In with correct Credentials" });
       }
 
       const data = {
@@ -92,7 +94,8 @@ router.post("/login", [
         },
       };
       const authToken = jwt.sign(data, JWT_SECRET);
-      res.json({ authToken });
+      success = true;
+      res.json({ success, authToken });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Internal Server Error");
